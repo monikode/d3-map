@@ -1,0 +1,10 @@
+<input
+  type="file"
+  accept="image/jpeg, image/png, image/jpg"
+  (change)="onFileChanged($event)"
+  #fileUpload
+  style="display: none;"
+/>
+<app-button (click)="fileUpload.click()" tooltip="Selecionar imagem">
+  <img src="assets/svg/icon/picture.svg" alt="" srcset="" />
+</app-button>
