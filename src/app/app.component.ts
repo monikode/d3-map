@@ -21,6 +21,9 @@ export class AppComponent {
   height = 400;
   numPoints = 100;
 
+  selectedPin: any = null;
+  isMoving: boolean = false;
+
   handleZoom = (e: any): void => {
     d3.select('svg g').attr('transform', e.transform);
 
@@ -41,50 +44,51 @@ export class AppComponent {
     })
     .on('zoom', this.handleZoom);
 
+  getElement(name: string) {
+    return d3.select<SVGSVGElement, unknown>(name);
+  }
   initZoom = () => {
-    d3.select<SVGSVGElement, unknown>('svg').call(this.zoom);
+    this.getElement('svg').call(this.zoom);
 
-    d3.select<SVGSVGElement, unknown>('svg g').on('click', (e) => {
-      this.data.push({
-        id: 'c' + this.data.length,
-        x: (e.offsetX - this.zoomX) / this.zoomRatio,
-        y: (e.offsetY - this.zoomY) / this.zoomRatio,
-        r: 3,
-      });
+    this.getElement('svg g').on('click', (e) => {
+      if (this.selectedPin) {
+        this.selectedPin = null;
+      } else {
+        const perc =
+          this.width /
+          (this.getElement('svg').node()?.width.baseVal.value ?? this.width);
 
-      d3.selectAll<SVGSVGElement, unknown>('svg circle').on(
-        'mouseover',
-        function (d, i) {
-          d3.select(this).transition().duration(50).attr('color', 'red');
-        }
-      );
+        this.data.push({
+          id: 'c' + this.data.length,
+          name: 'Pin ' + this.data.length,
+          x: (e.offsetX * perc - this.zoomX) / this.zoomRatio,
+          y: (e.offsetY * perc - this.zoomY) / this.zoomRatio,
+          r: 3,
+        });
+
+
+        this.selectedPin = this.data[this.data.length - 1];
+
+        d3.selectAll<SVGSVGElement, unknown>('svg circle').on(
+          'mouseover',
+          function (d, i) {
+            d3.select(this).transition().duration(50).attr('color', 'red');
+          }
+        );
+      }
     });
   };
 
-  update = () => {
-    d3.select('svg g')
-      .selectAll('circle')
-      .data(this.data)
-      .join('circle')
-      .attr('cx', function (d) {
-        return d.x;
-      })
-      .attr('cy', function (d) {
-        return d.y;
-      })
-      .attr('r', 3);
-  };
-
   limpar = () => {
-    d3.select('svg g').selectAll('circle').remove();
+    this.getElement('svg g').selectAll('circle').remove();
 
     this.data = [];
   };
 
-  onFileChanged(event: any) {
-    this.selectedImg = event.target.files[0];
+  onFileChanged(file: File) {
+    this.selectedImg = file
     const reader = new FileReader();
-    reader.readAsDataURL(this.selectedImg);
+    reader.readAsDataURL(file);
     reader.onload = (_event) => {
       this.url = reader.result;
 
@@ -99,7 +103,27 @@ export class AppComponent {
     this.initZoom();
   }
 
-  hoverCircle(e: any) {
+  hoverCircle(e: any, index: number) {
+    this.selectedPin = this.data[index];
     e.stopPropagation();
+  }
+
+  deletePin() {
+    this.data = this.data.filter((d) => d.id !== this.selectedPin.id);
+    this.selectedPin = null;
+  }
+  resetZoom() {
+    this.getElement('svg').transition().call(this.zoom.scaleTo, 1);
+  }
+
+  selectPin(index: number) {
+    this.selectedPin = this.data[index];
+
+    this.getElement('svg').call(this.zoom.scaleTo, 6);
+
+    this.getElement('svg')
+      .transition()
+      .duration(30)
+      .call(this.zoom.translateTo, this.selectedPin.x, this.selectedPin.y);
   }
 }

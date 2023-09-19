@@ -1,0 +1,112 @@
+svg {
+  max-height: 80vh;
+  border-radius: 10px;
+}
+
+.canvas {
+  max-height: 80vh;
+  min-width: 300px;
+
+  display: flex;
+  justify-content: center;
+}
+
+circle {
+  cursor: pointer;
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.right {
+  flex: 1;
+  min-width: 200px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 1rem;
+
+  max-height: 70vh;
+}
+
+.right h3 {
+  margin: 0;
+}
+
+.right .list {
+  margin: 0;
+  list-style: none;
+  padding-inline-start: 0;
+  gap: 0.5rem;
+}
+
+.right li {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+}
+
+.right li:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+.right li:hover {
+  background-color: var(--light-gray);
+}
+
+.right li.selected {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.right .empty {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.604);
+}
+.left {
+  flex: 2;
+  min-width: 300px;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pin {
+  cursor: pointer;
+}
+
+.button-bar {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pin-details,
+.pin-empty {
+  background-color: var(--light-gray);
+  border-radius: 10px;
+  padding: 2rem 1rem;
+}
+
+.pin-empty {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  color: #0000008d;
+}
+
+.pin-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pin-details > div {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
