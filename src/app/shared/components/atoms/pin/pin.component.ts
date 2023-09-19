@@ -1,10 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Pin } from '../../../interfaces/pin/Pin';
 
 @Component({
-  selector: 'app-pin',
-  templateUrl: './pin.component.html',
-  styleUrls: ['./pin.component.css']
+  selector: '[svgpin]',
+  template: `<svg:circle svgpin></svg:circle> `,
+  styleUrls: ['./pin.component.css'],
 })
 export class PinComponent {
-
+  @Input() pin: Pin = {
+    color: 'black',
+    id: '0',
+    name: 'pin',
+    x: 0,
+    y: 0,
+    r: 3,
+  };
 }

@@ -20,7 +20,7 @@
             [attr.r]="c.r"
             [id]="c.id"
             fill="brown"
-            (click)="hoverCircle($event, i)"
+            (click)="clickPin($event, i)"
           ></circle>
         </g>
       </svg>
@@ -31,9 +31,15 @@
         [selectedImg]="selectedImg"
         (onSelectedImg)="onFileChanged($event)"
       ></app-upload-file>
-      <app-button (click)="limpar()"> Limpar </app-button>
+      <app-button (click)="clearPins()"> Limpar </app-button>
       <app-button (click)="resetZoom()" tooltip="Resetar Zoom">
         <img src="assets/svg/icon/full-view.svg" alt="" srcset="" />
+      </app-button>
+      <app-button (click)="zoomIn()">
+        <img src="assets/svg/icon/zoom-in.svg" alt="" srcset="" />
+      </app-button>
+      <app-button (click)="zoomOut()">
+        <img src="assets/svg/icon/zoom-out.svg" alt="" srcset="" />
       </app-button>
     </div>
     <div *ngIf="selectedPin" class="pin-details">
@@ -42,7 +48,7 @@
       </div>
 
       <div>
-        <app-button (click)="deletePin()">
+        <app-button (click)="deletePin()" tooltip="Deletar pin">
           <img src="assets/svg/icon/delete.svg" alt="" srcset="" />
         </app-button>
 

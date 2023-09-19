@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import * as d3 from 'd3';
+import { Pin } from './shared/interfaces/pin/Pin';
 
 @Component({
   selector: 'app-root',
@@ -7,23 +8,36 @@ import * as d3 from 'd3';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'd3-map';
+  data: Pin[] = [];
+  idIncrement = 1;
+  selectedPin: Pin | null = null;
 
-  svg: d3.Selection<d3.BaseType, unknown, HTMLElement, any> | null = null;
-  data: any[] = [];
-  width = 600;
   selectedImg: any;
   url: any = '';
+
+  width = 600;
+  height = 400;
+
+  zoom;
   zoomRatio = 1;
   zoomY = 0;
   zoomX = 0;
 
-  height = 400;
-  numPoints = 100;
+  constructor() {
+    this.zoom = d3
+      .zoom<SVGSVGElement, unknown>()
+      .scaleExtent([1, 10])
+      .translateExtent([
+        [0, 0],
+        [this.width, this.height],
+      ])
+      .filter((e: any) => {
+        return e.type != 'click';
+      })
+      .on('zoom', this.handleZoom);
+  }
 
-  selectedPin: any = null;
-  isMoving: boolean = false;
-
+  
   handleZoom = (e: any): void => {
     d3.select('svg g').attr('transform', e.transform);
 
@@ -32,22 +46,16 @@ export class AppComponent {
     this.zoomY = e.transform.y;
   };
 
-  zoom = d3
-    .zoom<SVGSVGElement, unknown>()
-    .scaleExtent([1, 10])
-    .translateExtent([
-      [0, 0],
-      [this.width, this.height],
-    ])
-    .filter((e: any) => {
-      return e.type != 'click';
-    })
-    .on('zoom', this.handleZoom);
 
   getElement(name: string) {
     return d3.select<SVGSVGElement, unknown>(name);
   }
-  initZoom = () => {
+
+  getAllElements(name: string) {
+    return d3.selectAll<SVGSVGElement, unknown>(name);
+  }
+
+  initD3 = () => {
     this.getElement('svg').call(this.zoom);
 
     this.getElement('svg g').on('click', (e) => {
@@ -59,34 +67,23 @@ export class AppComponent {
           (this.getElement('svg').node()?.width.baseVal.value ?? this.width);
 
         this.data.push({
-          id: 'c' + this.data.length,
-          name: 'Pin ' + this.data.length,
+          id: 'c' + this.idIncrement,
+          name: 'Pin ' + this.idIncrement,
           x: (e.offsetX * perc - this.zoomX) / this.zoomRatio,
           y: (e.offsetY * perc - this.zoomY) / this.zoomRatio,
           r: 3,
+          color: 'brown',
         });
 
+        this.idIncrement++;
 
         this.selectedPin = this.data[this.data.length - 1];
-
-        d3.selectAll<SVGSVGElement, unknown>('svg circle').on(
-          'mouseover',
-          function (d, i) {
-            d3.select(this).transition().duration(50).attr('color', 'red');
-          }
-        );
       }
     });
   };
 
-  limpar = () => {
-    this.getElement('svg g').selectAll('circle').remove();
-
-    this.data = [];
-  };
-
   onFileChanged(file: File) {
-    this.selectedImg = file
+    this.selectedImg = file;
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (_event) => {
@@ -99,21 +96,14 @@ export class AppComponent {
     };
   }
 
-  ngOnInit(): void {
-    this.initZoom();
-  }
-
-  hoverCircle(e: any, index: number) {
+  clickPin(e: any, index: number) {
     this.selectedPin = this.data[index];
     e.stopPropagation();
   }
 
   deletePin() {
-    this.data = this.data.filter((d) => d.id !== this.selectedPin.id);
+    this.data = this.data.filter((d) => d.id !== this.selectedPin?.id);
     this.selectedPin = null;
-  }
-  resetZoom() {
-    this.getElement('svg').transition().call(this.zoom.scaleTo, 1);
   }
 
   selectPin(index: number) {
@@ -123,7 +113,30 @@ export class AppComponent {
 
     this.getElement('svg')
       .transition()
-      .duration(30)
+      .duration(100)
       .call(this.zoom.translateTo, this.selectedPin.x, this.selectedPin.y);
+  }
+
+  clearPins = () => {
+    this.getElement('svg g').selectAll('circle').remove();
+
+    this.data = [];
+    this.idIncrement = 1;
+  };
+
+  resetZoom() {
+    this.getElement('svg').transition().call(this.zoom.scaleTo, 1);
+  }
+
+  zoomIn() {
+    this.getElement('svg').transition().call(this.zoom.scaleBy, 2);
+  }
+
+  zoomOut() {
+    this.getElement('svg').transition().call(this.zoom.scaleBy, 0.5);
+  }
+
+  ngOnInit(): void {
+    this.initD3();
   }
 }
