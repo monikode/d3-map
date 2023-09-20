@@ -56,14 +56,13 @@ export class AppComponent {
   initD3 = () => {
     this.getElement('svg').call(this.zoom);
 
-    this.getElement('svg g').on('click', (e) => {
+    this.getElement('svg g').on('click', (e: MouseEvent) => {
       if (this.selectedPin) {
         this.selectedPin = null;
       } else {
         const perc =
           this.width /
           (this.getElement('svg').node()?.width.baseVal.value ?? this.width);
-
         this.data.push({
           id: 'c' + this.idIncrement,
           name: 'Pin ' + this.idIncrement,
