@@ -9,9 +9,11 @@ export class UploadFileComponent {
   @Input() selectedImg: File | null = null;
   @Output() onSelectedImg = new EventEmitter<File>();
 
-  onFileChanged(event: any) {
-    if (event.target.files.length > 0) {
-      this.selectedImg = event.target.files[0];
+  onFileChanged(event: Event) {
+    const target = event.target as HTMLInputElement
+    const files = target.files as FileList;
+    if (files.length > 0) {
+      this.selectedImg = files[0];
       this.onSelectedImg.emit(this.selectedImg ?? undefined);
       
     }

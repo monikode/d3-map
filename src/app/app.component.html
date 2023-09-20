@@ -35,16 +35,17 @@
       <app-button (click)="resetZoom()" tooltip="Resetar Zoom">
         <img src="assets/svg/icon/full-view.svg" alt="" srcset="" />
       </app-button>
-      <app-button (click)="zoomIn()">
+      <app-button (click)="zoomIn()" tooltip="Aumemtar Zoom">
         <img src="assets/svg/icon/zoom-in.svg" alt="" srcset="" />
       </app-button>
-      <app-button (click)="zoomOut()">
+      <app-button (click)="zoomOut()" tooltip="Diminuir Zoom">
         <img src="assets/svg/icon/zoom-out.svg" alt="" srcset="" />
       </app-button>
     </div>
     <div *ngIf="selectedPin" class="pin-details">
       <div>
         {{ selectedPin.name }}
+        
       </div>
 
       <div>
@@ -52,7 +53,7 @@
           <img src="assets/svg/icon/delete.svg" alt="" srcset="" />
         </app-button>
 
-        <app-button>Renomear</app-button>
+        <app-button (click)="rename()">Renomear</app-button>
       </div>
     </div>
 

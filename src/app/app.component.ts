@@ -12,8 +12,8 @@ export class AppComponent {
   idIncrement = 1;
   selectedPin: Pin | null = null;
 
-  selectedImg: any;
-  url: any = '';
+  selectedImg: File | null = null;
+  url: string | ArrayBuffer | null = '';
 
   width = 600;
   height = 400;
@@ -31,13 +31,12 @@ export class AppComponent {
         [0, 0],
         [this.width, this.height],
       ])
-      .filter((e: any) => {
+      .filter((e: MouseEvent) => {
         return e.type != 'click';
       })
       .on('zoom', this.handleZoom);
   }
 
-  
   handleZoom = (e: any): void => {
     d3.select('svg g').attr('transform', e.transform);
 
@@ -45,7 +44,6 @@ export class AppComponent {
     this.zoomX = e.transform.x;
     this.zoomY = e.transform.y;
   };
-
 
   getElement(name: string) {
     return d3.select<SVGSVGElement, unknown>(name);
@@ -90,13 +88,13 @@ export class AppComponent {
       this.url = reader.result;
 
       d3.select('svg g image')
-        .attr('xlink:href', this.url)
+        .attr('xlink:href', this.url as string)
         .attr('width', 600)
         .attr('height', 400);
     };
   }
 
-  clickPin(e: any, index: number) {
+  clickPin(e: MouseEvent, index: number) {
     this.selectedPin = this.data[index];
     e.stopPropagation();
   }
@@ -134,6 +132,23 @@ export class AppComponent {
 
   zoomOut() {
     this.getElement('svg').transition().call(this.zoom.scaleBy, 0.5);
+  }
+
+  rename() {
+    let name = prompt('Renomear Pin', this.selectedPin?.name);
+
+    if (name != null) {
+      this.data = this.data.map((pin) => {
+        if (pin == this.selectedPin && name != null && this.selectedPin) {
+          this.selectedPin = {
+            ...pin,
+            name,
+          };
+          return this.selectedPin;
+        }
+        return pin;
+      });
+    }
   }
 
   ngOnInit(): void {
